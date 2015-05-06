@@ -7,10 +7,6 @@
 parse without langs:
 sgmllib:0.00438080000877
 lxml:0.00115759999752
-
-parse with langs:
-sgmllib:1.70899399996
-lxml:1.62687300014
 """
 __author__ = 'TonyPythoneer'
 
@@ -19,10 +15,8 @@ import time
 import httplib
 import sgmllib
 
+from bs4 import BeautifulSoup
 from lxml import html
-
-
-excutenum = 1000
 
 
 def timer_decorater(custom_name="", exec_time=1):
@@ -44,7 +38,6 @@ def timer_decorater(custom_name="", exec_time=1):
                                                    avg=average)
         return args_wrapper
     return func_wrapper
-
 
 
 class RepositoriesList(sgmllib.SGMLParser):
@@ -147,6 +140,12 @@ def lxml_parse_html(web_page):
     a_tags = tree.xpath('//h3[@class="repo-list-name"]/a')
 
 
+@timer_decorater(custom_name="bs4", exec_time=1000)
+def bs4_parse_html(web_page):
+    soup = BeautifulSoup(webpage_about_repositories)
+    h3_tags = soup.find_all('h3', {'class':'repo-list-name'})
+    a_tags = [ t.a for t in h3_tags ]
+
 # read someone's repositories that host on github -- my repos for example.
 conn = httplib.HTTPSConnection("github.com")
 conn.request("GET", "/TonyPythoneer?tab=repositories")
@@ -155,56 +154,8 @@ webpage_about_repositories = conn.getresponse().read()
 # test1: sgmllib
 sgmllib_parse_html(webpage_about_repositories)
 
-# test1: sgmllib
+# test2: lxml
 lxml_parse_html(webpage_about_repositories)
-'''
-# repositories information feed SGMLParser
-repositories_list = RepositoriesList()
-repositories_list.feed(webpage_about_repositories)
 
-# test1: use SGMLParser
-start = time.time()
-for i in range(excutenum):
-    repositories_list.feed(webpage_about_repositories)
-    for key in repositories_list.repositories.keys():
-        # get langs information from repository
-        conn.request("GET", repositories_list.repositories[key]['href'])
-        webpage_about_repository = conn.getresponse().read()
-        #
-        langs_list = LangsList()
-        langs_list.feed(webpage_about_repository)
-        repositories_list.repositories[key]['langs'] = langs_list.langs
-end = time.time()
-print (end - start)/excutenum
-print repositories_list.repositories
-
-# test2: use lxml
-start = time.time()
-for i in range(excutenum):
-    repository_dic = {}
-    tree = html.fromstring(webpage_about_repositories)
-    a_tags = tree.xpath('//h3[@class="repo-list-name"]/a')
-    p_tags = tree.xpath('//p[@class="repo-list-meta"]/time')
-    for index in range(len(a_tags)):
-        a_tag = a_tags[index].attrib
-        p_tag = p_tags[index].attrib
-        # get name, href, datetime information from repositories
-        repository_name = a_tag['href'].split('/')[-1]
-        repository_href = a_tag['href']
-        repository_datetime = datetime.strptime(p_tag['datetime'], "%Y-%m-%dT%H:%M:%SZ")
-        # get langs information from repository
-        conn.request("GET", repository_href)
-        webpage_about_repository = conn.getresponse().read()
-        tree = html.fromstring(webpage_about_repository)
-        repository_langs = tree.xpath('//span[@class="lang"]/text()')
-        # make a repository dic
-        repository_dic[repository_name] = {'href': repository_href,
-                                           'datetime': repository_datetime,
-                                           'langs': repository_langs}
-end = time.time()
-print (end - start)/excutenum
-print repository_dic
-
-# same?
-print repositories_list.repositories == repository_dic
-'''
+# test3: bs4
+bs4_parse_html(webpage_about_repositories)
