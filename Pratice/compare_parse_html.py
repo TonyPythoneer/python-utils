@@ -14,8 +14,8 @@ lxml:1.62687300014
 """
 __author__ = 'TonyPythoneer'
 
-import time
 from datetime import datetime
+import time
 import httplib
 import sgmllib
 
@@ -23,6 +23,28 @@ from lxml import html
 
 
 excutenum = 1000
+
+
+def timer_decorater(custom_name="", exec_time=1):
+    def func_wrapper(func):
+        def args_wrapper(wp,*args,**kwargs):
+            # timer
+            start = time.time()
+            for num in range(exec_time):
+                func(wp)
+            end = time.time()
+            average = (start - end) / exec_time
+
+            # print result
+            if custom_name:
+                print "{fun_name}:{avg}".format(fun_name=custom_name,
+                                                avg=average)
+            else:
+                print "exec_avg_time:{avg}".format(fun_name=custom_name,
+                                                   avg=average)
+        return args_wrapper
+    return func_wrapper
+
 
 
 class RepositoriesList(sgmllib.SGMLParser):
@@ -109,26 +131,25 @@ class RepositoriesList(sgmllib.SGMLParser):
             self.is_p = ""
 
 
-class LangsList(sgmllib.SGMLParser):
-    def __init__(self, *args, **kwargs):
-        sgmllib.SGMLParser.__init__(self, *args, **kwargs)
-        self.is_span = ""
-        self.langs = []
-    def start_span(self, attrs):
-        for key, value in attrs:
-            if key == 'class' and value == 'lang':
-                self.is_span = 1
-    def end_span(self):
-        self.is_span = ""
-    def handle_data(self, text):
-        if self.is_span:
-            self.langs.append(text)
+@timer_decorater(custom_name="sgmllib", exec_time=1000)
+def sgmllib_parse_html(web_page):
+    # repositories information feed SGMLParser
+    repositories_list = RepositoriesList()
+    repositories_list.feed(web_page)
 
-# read someone's repositories that host on github
+    # get href of repos
+    repositories_list.feed(webpage_about_repositories)
+
+
+# read someone's repositories that host on github -- my repos for example.
 conn = httplib.HTTPSConnection("github.com")
 conn.request("GET", "/TonyPythoneer?tab=repositories")
 webpage_about_repositories = conn.getresponse().read()
 
+# test1: sgmllib
+sgmllib_parse_html(webpage_about_repositories)
+
+'''
 # repositories information feed SGMLParser
 repositories_list = RepositoriesList()
 repositories_list.feed(webpage_about_repositories)
@@ -178,3 +199,4 @@ print repository_dic
 
 # same?
 print repositories_list.repositories == repository_dic
+'''
