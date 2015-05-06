@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #  @first_date    20150219
-#  @date          20150222
+#  @date          20150506
 #  @version       0.0
 """
-parse without langs:
-sgmllib:0.00438080000877
-lxml:0.00115759999752
+When parsing html, it will get links of repos
+
+Testing each module about time of program execution. It's as below:
+sgmllib:0.0118350000381
+lxml:0.00131200003624
+bs4:0.0157369999886
 """
 __author__ = 'TonyPythoneer'
 
