@@ -33,7 +33,7 @@ def timer_decorater(custom_name="", exec_time=1):
             for num in range(exec_time):
                 func(wp)
             end = time.time()
-            average = (start - end) / exec_time
+            average = (end - start) / exec_time
 
             # print result
             if custom_name:
@@ -141,6 +141,12 @@ def sgmllib_parse_html(web_page):
     repositories_list.feed(webpage_about_repositories)
 
 
+@timer_decorater(custom_name="lxml", exec_time=1000)
+def lxml_parse_html(web_page):
+    tree = html.fromstring(webpage_about_repositories)
+    a_tags = tree.xpath('//h3[@class="repo-list-name"]/a')
+
+
 # read someone's repositories that host on github -- my repos for example.
 conn = httplib.HTTPSConnection("github.com")
 conn.request("GET", "/TonyPythoneer?tab=repositories")
@@ -149,6 +155,8 @@ webpage_about_repositories = conn.getresponse().read()
 # test1: sgmllib
 sgmllib_parse_html(webpage_about_repositories)
 
+# test1: sgmllib
+lxml_parse_html(webpage_about_repositories)
 '''
 # repositories information feed SGMLParser
 repositories_list = RepositoriesList()
