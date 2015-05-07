@@ -4,7 +4,7 @@
 #  @date          20150506
 #  @version       0.0
 """
-When parsing html, it will get links of repos
+Note:When parsing html, it will get links of repos
 
 Testing each module about time of program execution. It's as below:
 sgmllib:0.0118350000381
