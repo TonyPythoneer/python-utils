@@ -1,0 +1,10 @@
+<div id='form'>
+    {% if err_msg %}
+        <div>Error Message: {{ err_msg }}</div>
+    {% endif %}
+    <form action="{% url 'user:signup' %}" method="post">
+        {% csrf_token %}
+        {{ signup_form.as_p }}
+        <button type="submit" value="submit">submit</button>
+    </form>
+</div>

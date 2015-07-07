@@ -1,0 +1,11 @@
+<h1>Welcome!</h1>
+
+{% if msg %}
+    <div>Message: {{ msg }}</div>
+{% endif %}
+
+<ul>
+{% for link_name ,link_url in links.items %}
+    <li><a href="{{ link_url }}">{{ link_name }}</a></li>
+{% endfor %}
+<ul>
