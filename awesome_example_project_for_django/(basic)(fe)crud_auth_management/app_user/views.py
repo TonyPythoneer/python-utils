@@ -37,16 +37,16 @@ def signup(req):
     if req.method == 'POST':
         # Verify: Processing POST data by form
         sf = SignupForm(req.POST)
-        print dir(sf)
-        print sf.data
-        print dir(sf["email"])
-        print type(sf["email"])
-        print sf["email"].data
-        print sf["password"].value()
         if not sf.is_valid():
             rtr_args['context']['err_msg'] = sf.errors.items()
             return rtr(**rtr_args)
 
+        if User.objects.filter(email=sf.data["email"]).exists():
+            rtr_args['context']['err_msg'] = {"User": ["The username/email is registered."]}.items()
+            return rtr(**rtr_args)
+
+        User.objects.create_user(email=sf.data["email"], password=sf.data["password"])
+        user.save()
 
         return redirect_with_querystring("home", {"msg": "Successful registration!"})
 

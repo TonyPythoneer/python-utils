@@ -1,6 +1,11 @@
 <div id='form'>
     {% if err_msg %}
-        <div>Error Message: {{ err_msg }}</div>
+        <div>Error Message:</div>
+        <ul>
+            {% for field, msg in err_msg %}
+                <li>{{ field|capfirst }}: {{ msg.0 }}</li>
+            {% endfor %}
+        </ul>
     {% endif %}
     <form action="{% url 'user:signup' %}" method="post">
         {% csrf_token %}
