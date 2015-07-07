@@ -4,7 +4,7 @@
 #  @date          20150702
 #  @version       0.0
 '''
-Create Multipurpose Internet Mail Extensions (MIME) Mail
+How to access https service by httplib2
 '''
 import httplib2
 from json import dumps
