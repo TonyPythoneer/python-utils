@@ -3,13 +3,13 @@
 #  @first_date    20150713
 #  @date          20150713
 #  @version       0.1
-'''
+"""
 It inherits TokenAuthentication of django-rest-framework/rest_framework/authentication.py and
-customizes authentication class that has token will expire of feature.
+customizes authentication class which has token will expire of feature.
 
 requirements:
 djangorestframework==2.4.2
-'''
+"""
 import datetime
 
 from django.utils.timezone import utc
@@ -18,12 +18,26 @@ from rest_framework.authentication import TokenAuthentication, get_authorization
 
 
 class ExpiringTokenAuthentication(TokenAuthentication):
-    '''Add inspecting expired token feature, for the admin's exclusive use.
-    '''
+    """Add timeliness token feature in TokenAuthentication
+
+    In short, the only two differences being:
+        1. request has to include a Authenticate header
+        2. Inspect created time of token
+
+    The rest of parts is the same TokenAuthentication.
+
+    Examples:
+        class ExampleView(APIView):
+            authentication_classes = (ExpiringTokenAuthentication,)
+            def get(self, request, format=None):
+                pass
+    """
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
 
+        """request has to include a Authenticate header
+        """
         if not auth or auth[0].lower() != b'token':
             msg = 'Invalid token header. No token provided.'
             raise exceptions.AuthenticationFailed(msg)
@@ -50,6 +64,8 @@ class ExpiringTokenAuthentication(TokenAuthentication):
         except self.model.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token.')
 
+        """Inspect created time of token
+        """
         utc_now = datetime.datetime.utcnow().replace(tzinfo=utc)
         if token.created < utc_now - datetime.timedelta(hours=24):
             token.delete()
