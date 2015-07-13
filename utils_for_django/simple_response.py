@@ -22,8 +22,8 @@ def simple_response(api_result, success_status, error_status):
     class and def declarations, the simple function just needs 3 lines
     to complete the same feature.
 
-    Note:
-        Be sure to check your error handling message is dictionary type and
+    Warning:
+        Please be sure to check your error handling message is dictionary type and
         includes `err_msg` of key.
 
     Args:
@@ -37,13 +37,13 @@ def simple_response(api_result, success_status, error_status):
     Example:
         Look! It's just so easy and clear to code view.
 
-        >>> from rest_framework import status
-        >>> from simple_response import simple_response
-        >>> class RestView(APIView):
-        ...    def post(self, request, format=None):
-        ...        return simple_response(api_result=api_account.user_creation(request.DATA),
-        ...                               success_status=status.HTTP_201_CREATED,
-        ...                               error_status=status.HTTP_401_UNAUTHORIZED)
+            from rest_framework import status
+            from simple_response import simple_response
+            class ExampleView(APIView):
+               def post(self, request, format=None):
+                   return simple_response(api_result=api_account.user_creation(request.DATA),
+                                          success_status=status.HTTP_201_CREATED,
+                                          error_status=status.HTTP_401_UNAUTHORIZED)
     """
     # example:
     # 200 means HTTP_200_OK when touching off function except creating new object
