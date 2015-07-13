@@ -13,8 +13,8 @@ Attributes:
     ERROR_EVENTNUM_EVENTNAME (dict): It express more clear error message to
         acknowledge developer it.
 
-.. Django Restframework Guide:
-https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/status.py
+.. _Django Restframework Guide:
+    https://github.com/tomchristie/django-rest-framework/blob/master/rest_framework/status.py
 '''
 
 ERROR_001_NO_ACCOUNT_EXIST = {"code": -1,
