@@ -26,7 +26,7 @@ def home(req):
 @exec_timer
 def signup(req):
     rtr_args = {'template_name': 'signup.html',
-                'context': {'signup_form': SignupForm()},
+                'context': {'form': SignupForm()},
                 'context_instance': RequestContext(req)}
 
     # Call index.html when method is GET
@@ -37,15 +37,23 @@ def signup(req):
     if req.method == 'POST':
         # Verify: Processing POST data by form
         sf = SignupForm(req.POST)
+
+        m_fields = {field: sf.data[field] for field in sf.fields}
+        print m_fields
+
+        # Verify: the form has set validators
         if not sf.is_valid():
-            rtr_args['context']['err_msg'] = sf.errors.items()
+            # keep user's inputting data
+            rtr_args['context']['form'] = SignupForm(req.POST)
             return rtr(**rtr_args)
 
+        # it needs to add in validator of form
         if User.objects.filter(email=sf.data["email"]).exists():
             rtr_args['context']['err_msg'] = {"User": ["The username/email is registered."]}.items()
             return rtr(**rtr_args)
 
-        User.objects.create_user(email=sf.data["email"], password=sf.data["password"])
+        m_fields['username'] = m_fields['email']
+        user = User.objects.create_user(**m_fields)
         user.save()
 
         return redirect_with_querystring("home", {"msg": "Successful registration!"})
