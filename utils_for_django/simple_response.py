@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #  @first_date    20150709
-#  @date          20150713
-#  @version       0.0.1 - api_result stores a new value with status code
+#  @date          20150723
+#  @version       0.0.2 - Make api_result more clearly
 """
 If developing api services in Django REST framework,
 it help developer save time to code response of view and focus to write comment of view.
@@ -51,14 +51,11 @@ def simple_response(api_result, success_status, error_status):
         Success status:
             200 means HTTP_200_OK when touching off function except creating new object
     """
-    if "err_msg" not in api_result:
-        # api_result stores a new value with status code
-        api_result['code'] = success_status  # api_result['status'] = success_status
-        return Response(api_result,
-                        headers=HEADER,
-                        status=success_status)
+    result_status = success_status if "err_msg" not in api_result else error_status
+    if isinstance(api_result, dict):
+        # api_result stores a new value with status code if it's a dict obj
+        api_result['code'] = result_status
 
-    # api_result stores a new value with status code
-    api_result['code'] = error_status  # api_result['status'] = error_status
     return Response(api_result,
-                    status=error_status)
+                    headers=HEADER,
+                    status=result_status)
