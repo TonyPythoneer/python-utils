@@ -2,9 +2,20 @@
 # -*- coding: utf-8 -*-
 #  @first_date    20150803
 #  @date          20150804
-#  @version       0.1
-'''Fast make contents of README.md of repo
-'''
+#  @version       0.1.1
+"""Fast make contents of README.md of repo
+
+Example:
+
+    How to use this python package. A first method enter command line:
+
+        $ python make_readme_content.py <url>
+
+    A second method enter python interaction mode and input url:
+
+        $ python make_readme_content.py
+        $ >>> Input repo_url:<url>
+"""
 import sys
 import os
 import urllib2
@@ -13,16 +24,28 @@ from lxml import html
 
 
 def web_crawler(url):
-    '''Catch the web page
-    '''
+    """Catch the web page
+
+    Arg:
+        url (str): repo url
+
+    Return:
+        web_page (str): content of web page
+    """
     res = urllib2.urlopen(url)
     web_page = res.read()
     return web_page
 
 
 def get_contents_from_html(content):
-    '''Parse the html tag
-    '''
+    """Parse the html tag
+
+    Arg:
+        content (str): content of web page
+
+    Return:
+        contents (list): chapters and sections of contents
+    """
     tree = html.fromstring(content)
 
     # Declare: I appoint html tag its attribs is as follow
@@ -55,6 +78,15 @@ def get_contents_from_html(content):
 
 
 def make_contents(repo_name, contents):
+    """Make a file
+
+    Args:
+        repo_name (str): repo name
+        contents (list): chapters and sections of contents
+
+    Return:
+        contents (str): chapters and sections of contents
+    """
     # Process: Build file path
     file_infos = {'file_name': repo_name + '-contents.md',
                   'base_dir': os.path.dirname(os.path.abspath(__file__))}
@@ -70,10 +102,17 @@ def make_contents(repo_name, contents):
             elif 'h2' in content['tag']:
                 f.write('    ' + context)
 
+    # Process: Hint user about file complete
+    print 'SUCCESSFUL!'
+    print 'The contents locate at: ' + file_path
+
 
 def cmd(*args):
-    '''Enter command line in console
-    '''
+    """Enter command line in console
+
+    Args:
+        *args: Variable length argument list.
+    """
     # Inspect: It has to include at least one arg
     try:
         url = args[0]
