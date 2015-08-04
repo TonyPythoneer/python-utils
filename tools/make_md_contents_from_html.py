@@ -102,7 +102,7 @@ def make_contents(repo_name, contents):
             elif 'h2' in content['tag']:
                 f.write('    ' + context)
 
-    # Process: Hint user about file complete
+    # Process: Hint that file have been completed
     print 'SUCCESSFUL!'
     print 'The contents locate at: ' + file_path
 
