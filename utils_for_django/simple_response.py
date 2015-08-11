@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #  @first_date    20150709
-#  @date          20150723
-#  @version       0.0.2 - Make api_result more clearly
+#  @date          20150811
+#  @version       0.0.3 - Add design reason in comments
 """
 If developing api services in Django REST framework,
 it help developer save time to code response of view and focus to write comment of view.
@@ -20,6 +20,11 @@ def simple_response(api_result, success_status, error_status):
     When coding a view function originally needs 6 lines which exclude
     class and def declarations, the simple function just needs 3 lines
     to complete the same feature.
+
+    Design reason:
+        Let's suppose the api will return a pair of (sucessful) dict and (failed) dict or
+        a pair of (sucessful) list and (failed) dict. These failed dicts certainly have
+        a key of `err_msg` after they will add two sets of `code` and `status`.
 
     Warning:
         Please be sure to check your error handling message is dictionary type and
@@ -55,6 +60,7 @@ def simple_response(api_result, success_status, error_status):
     if isinstance(api_result, dict):
         # api_result stores a new value with status code if it's a dict obj
         api_result['code'] = result_status
+        api_result['status'] = 'OK' if "err_msg" not in api_result else 'Error'
 
     return Response(api_result,
                     headers=HEADER,
