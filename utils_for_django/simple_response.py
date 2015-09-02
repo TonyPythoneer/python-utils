@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #  @first_date    20150709
-#  @date          20150811
-#  @version       0.0.3 - Add design reason in comments
+#  @date          20150902
+#  @version       0.1.0 - Build api response
 """
 If developing api services in Django REST framework,
 it help developer save time to code response of view and focus to write comment of view.
@@ -65,3 +65,51 @@ def simple_response(api_result, success_status, error_status):
     return Response(api_result,
                     headers=HEADER,
                     status=result_status)
+
+
+def api_response(populated_form, api_func, success_status, error_status):
+    """Near-perfect api response. Let data verification and api function separate out fully.
+
+    It separates out data verification and api function.
+
+    It has finished to verified that form instance will make a dictionary-like object
+    containing clean data (or error details) and a boolean object meaning form validity.
+
+    Furthermore, form validity can be reuse one time because it can clearly point out
+    True or False. Make error details expand more elastically when it sets expression in
+    if-else statement.
+
+    Args:
+        populated_form (form instance): Populate form with data from the request
+        api_func (function): Make data process by corresponding view's api function
+        success_status (Int): Return successful status code, e.g. 200, 201
+        error_status (Int): Return successful status code, e.g. 400, 401
+
+    Returns:
+        Response (List): list of responses include api result and success/error status.
+
+    Example:
+        from rest_framework import status
+        from rest_framework.views import APIView
+
+        from utils.simple_response import api_response
+
+        class ExampleAPIView(APIView):
+            res_status = {"success_status": status.HTTP_201_CREATED,
+                          "error_status": status.HTTP_401_UNAUTHORIZED}
+            def post(self, request, format=None):
+                return api_response(populated_form=FormClass(request.DATA),
+                                    api_func=api_func.example_func
+                                    **res_status)
+    """
+    # Verification process: Verify by validators of form class
+    form_validity = populated_form.is_valid()
+    api_result = api_func(populated_form.clean_data) if form_validify else populated_form.error
+
+    # Data process: Verify by validators of form class
+    result_status = success_status if form_validify else error_status
+    if isinstance(api_result, dict):
+        # api_result stores a new value with status code if it's a dict obj
+        api_result['code'] = result_status
+        api_result['status'] = 'OK' if form_validify else 'Error'
+    return Response(api_result, headers=HEADER, status=result_status)
