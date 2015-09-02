@@ -111,5 +111,10 @@ def api_response(populated_form, api_func, success_status, error_status):
     if isinstance(api_result, dict):
         # api_result stores a new value with status code if it's a dict obj
         api_result['code'] = result_status
-        api_result['status'] = 'OK' if form_validify else 'Error'
+        if form_validify:
+            api_result['status'] = 'OK'
+            api_result['detail'] = None
+        else:
+            api_result['status'] = 'Error'
+
     return Response(api_result, headers=HEADER, status=result_status)
