@@ -67,7 +67,7 @@ def simple_response(api_result, success_status, error_status):
                     status=result_status)
 
 
-def api_response(populated_form, api_func, success_status, error_status):
+def api_response(filled_form, api_func, success_status, error_status):
     """Near-perfect api response. Let data verification and api function separate out fully.
 
     It separates out data verification and api function.
@@ -80,7 +80,7 @@ def api_response(populated_form, api_func, success_status, error_status):
     if-else statement.
 
     Args:
-        populated_form (form instance): Populate form with data from the request
+        filled_form (form instance): Populate form with data from the request
         api_func (function): Make data process by corresponding view's api function
         success_status (Int): Return successful status code, e.g. 200, 201
         error_status (Int): Return successful status code, e.g. 400, 401
@@ -98,13 +98,13 @@ def api_response(populated_form, api_func, success_status, error_status):
             res_status = {"success_status": status.HTTP_201_CREATED,
                           "error_status": status.HTTP_401_UNAUTHORIZED}
             def post(self, request, format=None):
-                return api_response(populated_form=FormClass(request.DATA),
-                                    api_func=api_func.example_func
+                return api_response(filled_form=FormClass(request.DATA),
+                                    api_func=api_func.example_func,
                                     **res_status)
     """
     # Verification process: Verify by validators of form class
-    form_validity = populated_form.is_valid()
-    api_result = api_func(populated_form.clean_data) if form_validify else populated_form.error
+    form_validity = filled_form.is_valid()
+    api_result = api_func(filled_form.clean_data) if form_validify else filled_form.error
 
     # Data process: Customize api_result content
     result_status = success_status if form_validify else error_status
