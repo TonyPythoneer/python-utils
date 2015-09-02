@@ -106,10 +106,9 @@ def api_response(populated_form, api_func, success_status, error_status):
     form_validity = populated_form.is_valid()
     api_result = api_func(populated_form.clean_data) if form_validify else populated_form.error
 
-    # Data process: Verify by validators of form class
+    # Data process: Customize api_result content
     result_status = success_status if form_validify else error_status
-    if isinstance(api_result, dict):
-        # api_result stores a new value with status code if it's a dict obj
+    if isinstance(api_result, dict):  # it's customization for dict
         api_result['code'] = result_status
         if form_validify:
             api_result['status'] = 'OK'
