@@ -70,6 +70,12 @@ def install_web_service():
     if not os.path.isdir(SERVICE_DEPLOYMENT_FILENAME):
         commands.getstatusoutput("mkdir {}".format(SERVICE_DEPLOYMENT_FILENAME))
 
+    if not os.path.isdir('/etc/uwsgi'):
+        status, _ = commands.getstatusoutput("mkdir {}".format('/etc/uwsgi'))
+        if status == 0:
+            commands.getstatusoutput("mkdir {}".format('/etc/uwsgi/vassals '))
+
+
     # Actions: Build nginx and uwsgi
     # Action: Link uwsgi to vassals
     service_uwsgi = os.path.join(SERVICE_DEPLOYMENT_FILENAME, PJ_UWSGI)
