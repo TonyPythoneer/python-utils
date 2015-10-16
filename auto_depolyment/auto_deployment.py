@@ -9,6 +9,7 @@ REPO_FILENAME = os.path.dirname(os.path.abspath(__name__)) # Example: /../p-pjna
 REPO_DIR = os.path.dirname(REPO_FILENAME)  # Example: /../
 REPO_NAME = os.path.basename(REPO_FILENAME) # Example: p-pjname
 
+# Global variables: pj
 PJ_NAME = REPO_NAME.split('-')[-1]  # Example: pjname
 PJ_NGINX = '{PJ_NAME}_nginx.conf'.format(PJ_NAME=PJ_NAME)
 PJ_UWSGI = '{PJ_NAME}_uwsgi.ini'.format(PJ_NAME=PJ_NAME)
@@ -34,7 +35,7 @@ def establish_config_for_service():
     # Local variables
     nginx_kwargs = {"repo_name": REPO_NAME,
                     "service_deployment_filename": SERVICE_DEPLOYMENT_FILENAME}
-    uwsgi_kwargs = {"web_filename": os.path.join(SERVICE_DEPLOYMENT_FILENAME, PJ_NAME),
+    uwsgi_kwargs = {"web_filename": os.path.join(SERVICE_FILENAME, PJ_NAME),
                     "service_deployment_filename": SERVICE_DEPLOYMENT_FILENAME}
     files = {'nginx': ['nginx.conf', PJ_NGINX, nginx_kwargs],
              'uwsgi': ['uwsgi.ini', PJ_UWSGI, uwsgi_kwargs],
@@ -72,14 +73,14 @@ def install_web_service():
     # Actions: Build nginx and uwsgi
     # Action: Link uwsgi to vassals
     service_uwsgi = os.path.join(SERVICE_DEPLOYMENT_FILENAME, PJ_UWSGI)
-    vassal_uwsgi = os.path.join('/etc/nginx/sites-enabled/', PJ_UWSGI)
+    vassal_uwsgi = os.path.join('/etc/uwsgi/vassals/', PJ_UWSGI)
     if not os.path.islink(vassal_uwsgi):
         commands.getstatusoutput("ln -s {} {}".format(service_uwsgi, vassal_uwsgi))
     # Action: Link nginx to sites-enabled
     service_nginx = os.path.join(SERVICE_DEPLOYMENT_FILENAME, PJ_NGINX)
-    site_enable_uwsgi = os.path.join('/etc/nginx/sites-enabled/', PJ_NGINX)
-    if not os.path.islink(vassal_uwsgi):
-        commands.getstatusoutput("ln -s {} {}".format(service_nginx, site_enable_uwsgi))
+    site_enable_nginx = os.path.join('/etc/nginx/sites-enabled/', PJ_NGINX)
+    if not os.path.islink(site_enable_nginx):
+        commands.getstatusoutput("ln -s {} {}".format(service_nginx, site_enable_nginx))
 
 def change_owner_and_mod():
     commands.getstatusoutput("chown -R www-data {}".format(INSTALL_BASE_DIR))
